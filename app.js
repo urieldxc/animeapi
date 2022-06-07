@@ -16,14 +16,17 @@ FALTA FACTORIZAR BIEN!!!*/
 import { options } from './helpers/optionsFetch.js';
 import { fetchEpisodes } from './fetchEpisodes.js';
 
+let inputValue = "";
 const container = document.querySelector(".container");
 const animeTitle = document.querySelector(".animeTitle");
 const episodesDiv = document.querySelector(".episodesDiv");
+const inputSearch = document.querySelector(".inputSearch");
 
-const animeFetch = async() => {
-    const response = await fetch('https://jikan1.p.rapidapi.com/search/anime?q=Attack%20on%20Titan', options);
+const animeFetch = async(inputValue) => {
+    const response = await fetch(`https://jikan1.p.rapidapi.com/search/anime?q=${inputValue}`, options);
     const animeJSON = await response.json();
     const { results } = animeJSON;
+    console.log(results)
     const { title, episodes, synopsis, image_url, mal_id} = results[3];
     
     const animeDesc = document.createElement("p");
@@ -39,17 +42,26 @@ const animeFetch = async() => {
     
     animeTitle.innerHTML = title;
     animeDesc.innerHTML = synopsis;
-    container2.innerHTML = ("Episodes: ") + episodes;
+    container2.innerHTML = `Episodes: ${episodes}`;
     container2.style.fontWeight = "bold";
+
+    
     
     fetchEpisodes(mal_id, options); /* sacado de fetchEpisodes.js, como parámetros le paso el id del anime que hemos
     buscado y las opciones del fetch*/
     
 }
 
-animeFetch();
+
 
 const buttonEpisodes = document.querySelector(".episodesButton")
 buttonEpisodes.addEventListener('click', () => {
     episodesDiv.classList.toggle("episodeHidden");
+})
+
+inputSearch.addEventListener('keypress', (e)=>{
+    if(e.key == "Enter"){ 
+    inputValue=inputSearch.value
+    animeFetch(inputValue)
+}
 })
